@@ -125,3 +125,5 @@ See https://github.com/KevinOConnor/klipper/pull/1290
 # Changes
 - added RPI PSU support (https://github.com/morgan55555/klipper-rpi-psu)
 - added mesh compensation status (for compensation buttons)
+- klipper macro moved to /klipper folder, create it manually if needed
+- klipper config moved to /klipper folder, create it manually if needed
