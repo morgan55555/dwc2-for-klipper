@@ -121,3 +121,7 @@ web_path: dwc2/web
 ## Fix missing stuff in klipper today
 A Gcode callback and ack system is missing in klippy today for other objects than the serial. You need to use my klipper fork or patch the few lines by hand in gcode.py.
 See https://github.com/KevinOConnor/klipper/pull/1290
+
+# Changes
+- added RPI PSU support (https://github.com/morgan55555/klipper-rpi-psu)
+- added mesh compensation status (for compensation buttons)
