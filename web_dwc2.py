@@ -86,6 +86,7 @@ class web_dwc2:
 		self.heater_bed = self.printer.lookup_object('heater_bed', None)
 		self.fan = self.printer.lookup_object('fan', None)
 		self.sdcard = self.printer.lookup_object('virtual_sdcard', None)
+		self.psu = self.printer.lookup_object('rpi_psu', None)
 		self.toolhead = self.printer.lookup_object('toolhead', None)
 		#	hopeflly noone get more than 4 extruders up :D
 		self.extruders = [ self.printer.lookup_object('extruder', None) ]
@@ -367,7 +368,7 @@ class web_dwc2:
 		path_ = self.sdpath + web_.get_argument('name').replace("0:", "")
 
 		#	ovverride for config file
-		if "/sys/" in path_ and "config.g" in web_.get_argument('name').replace("0:", ""):
+		if "/sys/klipper/" in path_ and "config.g" in web_.get_argument('name').replace("0:", ""):
 			path_ = self.klipper_config
 
 		#	handle heigthmap
@@ -444,7 +445,7 @@ class web_dwc2:
 			})
 
 		#	add klipper macros as virtual files
-		if "/macros" in web_.get_argument('dir').replace("0:", ""):
+		if "/macros/klipper" in web_.get_argument('dir').replace("0:", ""):
 			for macro_ in self.klipper_macros:
 
 				repl_['files'].append({
@@ -455,7 +456,7 @@ class web_dwc2:
 				})
 
 		#	virtual config file
-		elif "/sys" in web_.get_argument('dir').replace("0:", ""):
+		elif "/sys/klipper" in web_.get_argument('dir').replace("0:", ""):
 
 			repl_['files'].append({
 				"type": "f",
@@ -554,7 +555,7 @@ class web_dwc2:
 	#	dwc rr_move - backup printer.cfg
 	def rr_move(self, web_):
 
-		if "/sys/" in web_.get_argument('old').replace("0:", "") and "config.g" in web_.get_argument('old').replace("0:", ""):
+		if "/sys/klipper/" in web_.get_argument('old').replace("0:", "") and "config.g" in web_.get_argument('old').replace("0:", ""):
 			src_ = self.klipper_config
 			dst_ = self.klipper_config + ".backup"
 
@@ -642,6 +643,11 @@ class web_dwc2:
 		else:
 			fan_stats = []
 
+		if self.psu:
+			atx_power = self.psu.get_status()
+		else:
+			atx_power = 0
+
 		if self.status_1.get("output", {}).get("message", None) :
 			self.status_1.update({ "output": {} })
 			self.message = None
@@ -660,7 +666,7 @@ class web_dwc2:
 			},
 			"currentTool": self.current_tool,	#	must be at least 1 ! learned the hardway....
 			"params": {
-				"atxPower": 0,
+				"atxPower": atx_power,
 				"fanPercent": [ fan_['speed']*100 for fan_ in fan_stats ] ,
 				"speedFactor": gcode_stats['speed_factor'] * 100,
 				"extrFactors": [ gcode_stats['extrude_factor'] * 100 ],
@@ -747,6 +753,16 @@ class web_dwc2:
 		else:
 			fan_stats = []
 
+		if self.psu:
+			atx_power = self.psu.get_status()
+		else:
+			atx_power = 0
+		
+		if self.printer.lookup_object('bed_mesh', None).z_mesh:
+			compensation = "Mesh compensation"
+		else:
+			compensation = "None"
+
 		if self.status_2.get("output", {}).get("message", None) :
 			self.status_2.update({ "output": {} })
 			self.message = None
@@ -766,7 +782,7 @@ class web_dwc2:
 			},
 			"currentTool": self.current_tool,
 			"params": {
-				"atxPower": 0 ,
+				"atxPower": atx_power,
 				"fanPercent": [ fan_['speed']*100 for fan_ in fan_stats ] ,
 				"fanNames": [ "" for fan_ in fan_stats ],
 				"speedFactor": gcode_stats['speed_factor'] * 100,
@@ -903,6 +919,11 @@ class web_dwc2:
 		else:
 			fan_stats = []
 
+		if self.psu:
+			atx_power = self.psu.get_status()
+		else:
+			atx_power = 0
+
 		self.status_3.update({
 			"status": self.get_printer_status() ,
 			"coords": {
@@ -917,7 +938,7 @@ class web_dwc2:
 			},
 			"currentTool": self.current_tool ,
 			"params": {
-				"atxPower": 0 ,
+				"atxPower": atx_power,
 				"fanPercent": [ fan_['speed']*100 for fan_ in fan_stats ] ,
 				"fanNames": [ "" for fan_ in fan_stats ],
 				"speedFactor": gcode_stats['speed_factor'] * 100,
@@ -1002,7 +1023,7 @@ class web_dwc2:
 			os.makedirs(dir_)
 
 		#	klipper config ecxeption
-		if "/sys/" in path_ and "config.g" in web_.get_argument('name'):
+		if "/sys/klipper/" in path_ and "config.g" in web_.get_argument('name'):
 			path_ = self.klipper_config
 
 		with open(path_.replace(" ","_"), 'w') as out:
