@@ -230,7 +230,6 @@ class web_dwc2:
 			#	filehandling - dircreation
 			elif "rr_mkdir" in self.request.uri:
 				self.repl_ = self.web_dwc2.rr_mkdir(self)
-				return
 			elif "rr_move" in self.request.uri:
 				self.repl_ = self.web_dwc2.rr_move(self)
 			#	gcode reply
