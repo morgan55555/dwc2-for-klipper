@@ -1154,7 +1154,7 @@ class web_dwc2:
 	def cmd_M290(self, params):
 
 		if self.get_axes_homed()[2] == 0:
-			self.gcode_reply.append('!! Only idiots try to babystep withoung homing !!')
+			self.gcode_reply.append('!! Printer is not homed !!')
 			return 0
 
 		mm_step = self.gcode.get_float('Z', params, None)
