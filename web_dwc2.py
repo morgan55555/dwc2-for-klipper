@@ -581,7 +581,7 @@ class web_dwc2:
 	#	dwc rr_reply - fetces gcodes
 	def rr_reply(self, web_):
 		while self.gcode_reply:
-			msg = self.gcode_reply.pop(0).replace("!!", "Error: ").replace("//", "Warning: ")
+			msg = self.gcode_reply.pop(0).replace("!!", "Error: ").replace("//", "")
 			web_.write( msg )
 	# 	rr_status_0 if klipper is down/failed to start
 	def rr_status_0(self):
