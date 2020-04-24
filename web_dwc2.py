@@ -502,6 +502,8 @@ class web_dwc2:
 			'M121': self.cmd_M121 ,		#	restore gcode state
 			'M140': self.cmd_M140 ,		#	set bedtemp(limit to 0 mintemp)
 			'M290': self.cmd_M290 ,		#	set babysteps
+			'M701': self.cmd_M701 ,		#	change filament
+			'M703': self.cmd_M703 ,		#	load filament macro
 			'M999': self.cmd_M999		#	issue restart
 		}
 
@@ -1170,6 +1172,23 @@ class web_dwc2:
 			self.gcode.cmd_SET_GCODE_OFFSET(params)
 			self.gcode_reply.append('Z adjusted by %0.2f' % mm_step)
 			return 0
+	#	set filament
+	def cmd_M701(self, params):
+		filament_name = self.gcode.get('S', params, None)
+		if filament_name != None:
+			self.filament = filament_name
+		elif self.filament != None:
+			self.gcode_reply.append(self.filament)
+		else:
+			self.gcode_reply.append('!! No filament loaded !!')
+		return 0
+	#	load filament
+	def cmd_M703(self, params):
+		if self.filament != None:
+			return 'M98 P"0:/filaments/' + self.filament + '/load.g"'
+		else:
+			self.gcode_reply.append('!! No filament loaded !!')
+		return 0
 	#	Ok button in DWC webif
 	def cmd_M292(self, params):
 		self.popup = None
