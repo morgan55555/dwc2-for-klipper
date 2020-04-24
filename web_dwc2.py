@@ -1365,6 +1365,10 @@ class web_dwc2:
 
 		state = 'I'
 
+		if self.psu and self.psu.get_status() != 1:
+			self.klipper_ready = False
+			return 'O'
+
 		if 'Printer is ready' != self.printer.get_state_message():
 			self.klipper_ready = False
 			return 'O'
