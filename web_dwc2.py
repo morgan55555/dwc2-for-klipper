@@ -1175,7 +1175,8 @@ class web_dwc2:
 			return 0
 	#	set filament
 	def cmd_M701(self, params):
-		filament_name = self.gcode.get_str('S', params, None)
+		splitted = params['#original'].split('"')
+		filament_name = splitted[1] if len(splitted) >= 2 else None
 		if filament_name != None:
 			self.filament = filament_name
 		elif self.filament != None:
