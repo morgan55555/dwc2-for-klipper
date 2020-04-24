@@ -759,7 +759,7 @@ class web_dwc2:
 			atx_power = 0
 		
 		if self.printer.lookup_object('bed_mesh', None).z_mesh:
-			compensation = "Mesh compensation"
+			compensation = "Mesh"
 		else:
 			compensation = "None"
 
