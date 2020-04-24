@@ -1186,7 +1186,7 @@ class web_dwc2:
 	#	load filament
 	def cmd_M703(self, params):
 		if self.filament != None:
-			params = self.parse_params('M98 P"0:/filaments/' + self.filament + '/load.g")
+			params = self.parse_params('M98 P"0:/filaments/' + self.filament + '/load.g"')
 			self.gcode.cmd_M98(params)
 			self.gcode_reply.append('Filament %s loaded' % self.filament)
 		else:
