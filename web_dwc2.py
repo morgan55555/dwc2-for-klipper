@@ -95,6 +95,7 @@ class web_dwc2:
 			if app:
 				self.extruders.append(app)
 		self.kinematics = self.toolhead.get_kinematics()
+		self.filament = ''
 
 		# 	print data for tracking layers during print
 		self.print_data = {}			#	printdata/layertimes etc
@@ -850,7 +851,7 @@ class web_dwc2:
 					"drives": [ extr_stat.index(ex_) ] ,
 					"axisMap": [ 1 ],
 					"fans": 1,
-					"filament": "",
+					"filament": self.filament,
 					"offsets": [ 0, 0, 0 ]
 				} for ex_ in extr_stat ]
 			,
