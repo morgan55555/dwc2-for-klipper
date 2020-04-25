@@ -1108,6 +1108,19 @@ class web_dwc2:
 
 		self.file_infos['running_file'] = self.rr_fileinfo('knackwurst').result()
 		return self.cmd_M24(params)
+	#	run dwc macro
+	def _run_macro(self, path):
+		if os.path.exists(path):
+
+			with open( path ) as f:
+				lines = f.readlines()
+
+			for line in [x.strip() for x in lines]:
+				self.gcode_queue.append(line)
+			
+			return True
+		else:
+			return False
 	#	rrf run macro
 	def cmd_M98(self, params):
 
@@ -1122,12 +1135,7 @@ class web_dwc2:
 				return 0
 		else:
 			#	now we know its a macro from dwc
-			with open( path ) as f:
-				lines = f.readlines()
-
-			for line in [x.strip() for x in lines]:
-				self.gcode_queue.append(line)
-
+			self._run_macro(path)
 			return 0
 	#	rrf M106 translation to klipper scale
 	def cmd_M106(self, params):
@@ -1173,30 +1181,35 @@ class web_dwc2:
 			self.gcode.cmd_SET_GCODE_OFFSET(params)
 			self.gcode_reply.append('Z adjusted by %0.2f' % mm_step)
 			return 0
-	#	set filament
+	#	load filament
 	def cmd_M701(self, params):
 		splitted = params['#original'].split(' ')
-		filament_name = splitted[1][1:] if len(splitted) >= 2 else None
-		if filament_name:
-			self.filament = filament_name
+		filament = splitted[1][1:] if len(splitted) >= 2 else None
+		if filament:
+			path = self.sdpath + '/filaments/' + filament + '/load.g'
+			if self._run_macro(path):
+				self.filament = filament_name
+			else:
+				self.gcode_reply.append('!! Invalid filament !!')
 		elif self.filament:
 			self.gcode_reply.append(self.filament)
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
 		return 0
-	#	load filament
+	#	unload filament
+	def cmd_M702(self, params):
+		if self.filament:
+			path = self.sdpath + '/filaments/' + self.filament + '/unload.g'
+			self._run_macro(path)
+			self.filament = None
+		else:
+			self.gcode_reply.append('!! No filament loaded !!')
+		return 0
+	#	load filament settings
 	def cmd_M703(self, params):
 		if self.filament:
-			path = self.sdpath + '/filaments/' + self.filament + '/load.g'
-
-			if os.path.exists(path):
-				with open( path ) as f:
-					lines = f.readlines()
-
-				for line in [x.strip() for x in lines]:
-					self.gcode_queue.append(line)
-			else:
-				self.gcode_reply.append('!! Invalid filament !!')
+			path = self.sdpath + '/filaments/' + self.filament + '/config.g'
+			self._run_macro(path)
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
 		return 0
