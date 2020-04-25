@@ -1175,11 +1175,11 @@ class web_dwc2:
 			return 0
 	#	set filament
 	def cmd_M701(self, params):
-		splitted = params['#original'].split('"')
-		filament_name = splitted[1] if len(splitted) >= 2 else None
-		if filament_name != None:
+		splitted = params['#original'].split(' ')
+		filament_name = splitted[1][1:] if len(splitted) >= 2 else None
+		if filament_name:
 			self.filament = filament_name
-		elif self.filament != None:
+		elif self.filament:
 			self.gcode_reply.append(self.filament)
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
