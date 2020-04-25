@@ -1195,8 +1195,6 @@ class web_dwc2:
 
 				for line in [x.strip() for x in lines]:
 					self.gcode_queue.append(line)
-
-				self.gcode_reply.append('Filament %s loaded' % self.filament)
 			else:
 				self.gcode_reply.append('!! Invalid filament !!')
 		else:
