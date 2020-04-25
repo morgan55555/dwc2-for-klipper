@@ -1196,7 +1196,6 @@ class web_dwc2:
 			self.gcode_reply.append(self.filament)
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
-		return 0
 	#	unload filament
 	def cmd_M702(self, params):
 		if self.filament:
@@ -1205,7 +1204,6 @@ class web_dwc2:
 			self.filament = None
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
-		return 0
 	#	load filament settings
 	def cmd_M703(self, params):
 		if self.filament:
@@ -1213,7 +1211,6 @@ class web_dwc2:
 			self._run_macro(path)
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
-		return 0
 	#	Ok button in DWC webif
 	def cmd_M292(self, params):
 		self.popup = None
