@@ -1186,12 +1186,22 @@ class web_dwc2:
 		return 0
 	#	load filament
 	def cmd_M703(self, params):
-		if self.filament != None:
-			params = self.parse_params('M98 P"0:/filaments/' + self.filament + '/load.g"')
-			self.cmd_M98(params)
-			self.gcode_reply.append('Filament %s loaded' % self.filament)
+		if self.filament:
+			path = self.sdpath + '/filaments/' + self.filament + '/load.g'
+
+			if os.path.exists(path):
+				with open( path ) as f:
+					lines = f.readlines()
+
+				for line in [x.strip() for x in lines]:
+					self.gcode_queue.append(line)
+
+				self.gcode_reply.append('Filament %s loaded' % self.filament)
+			else:
+				self.gcode_reply.append('!! Invalid filament !!')
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
+		return 0
 	#	Ok button in DWC webif
 	def cmd_M292(self, params):
 		self.popup = None
