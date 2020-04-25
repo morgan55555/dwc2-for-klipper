@@ -1188,7 +1188,7 @@ class web_dwc2:
 		if filament:
 			path = self.sdpath + '/filaments/' + filament + '/load.g'
 			if self._run_macro(path):
-				self.filament = filament_name
+				self.filament = filament
 			else:
 				self.gcode_reply.append('!! Invalid filament !!')
 		elif self.filament:
