@@ -503,8 +503,9 @@ class web_dwc2:
 			'M121': self.cmd_M121 ,		#	restore gcode state
 			'M140': self.cmd_M140 ,		#	set bedtemp(limit to 0 mintemp)
 			'M290': self.cmd_M290 ,		#	set babysteps
-			'M701': self.cmd_M701 ,		#	change filament
-			'M703': self.cmd_M703 ,		#	load filament macro
+			'M701': self.cmd_M701 ,		#	load filament
+			'M702': self.cmd_M702 ,		#	unload filament
+			'M703': self.cmd_M703 ,		#	load filament settings
 			'M999': self.cmd_M999		#	issue restart
 		}
 
