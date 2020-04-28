@@ -109,6 +109,12 @@ class web_dwc2:
 		#	registering command
 		self.gcode.register_command( 'M292', self.cmd_M292,
 			desc="okay button in DWC2")
+		self.gcode.register_command( 'M701', self.cmd_M701,
+			desc="load filament")
+		self.gcode.register_command( 'M702', self.cmd_M702,
+			desc="unload filament")
+		self.gcode.register_command( 'M703', self.cmd_M703,
+			desc="read filament settings")
 	#	reactor calls this on klippy restart
 	def shutdown(self):
 		#	kill the thread here
@@ -508,9 +514,6 @@ class web_dwc2:
 			'M121': self.cmd_M121 ,		#	restore gcode state
 			'M140': self.cmd_M140 ,		#	set bedtemp(limit to 0 mintemp)
 			'M290': self.cmd_M290 ,		#	set babysteps
-			'M701': self.cmd_M701 ,		#	load filament
-			'M702': self.cmd_M702 ,		#	unload filament
-			'M703': self.cmd_M703 ,		#	load filament settings
 			'M999': self.cmd_M999		#	issue restart
 		}
 
@@ -1189,8 +1192,7 @@ class web_dwc2:
 			return 0
 	#	load filament
 	def cmd_M701(self, params):
-		splitted = params['#original'].split(' ')
-		filament = splitted[1][1:] if len(splitted) >= 2 else None
+		filament = self.gcode.get_str('S', params, None)
 		if filament:
 			path = self.sdpath + '/filaments/' + filament + '/load.g'
 			current = self.sdpath + '/filaments/current'
@@ -1199,11 +1201,11 @@ class web_dwc2:
 				with open( current, 'w' ) as f:
 					f.write(self.filament)
 			else:
-				self.gcode_reply.append('!! Invalid filament !!')
+				self.gcode.respond_info('!! Invalid filament !!')
 		elif self.filament:
-			self.gcode_reply.append(self.filament)
+			self.gcode.respond_info(self.filament)
 		else:
-			self.gcode_reply.append('!! No filament loaded !!')
+			self.gcode.respond_info('!! No filament loaded !!')
 	#	unload filament
 	def cmd_M702(self, params):
 		if self.filament:
@@ -1217,14 +1219,14 @@ class web_dwc2:
 				if e.errno != errno.ENOENT:
 					raise
 		else:
-			self.gcode_reply.append('!! No filament loaded !!')
+			self.gcode.respond_info('!! No filament loaded !!')
 	#	load filament settings
 	def cmd_M703(self, params):
 		if self.filament:
 			path = self.sdpath + '/filaments/' + self.filament + '/config.g'
 			self._run_macro(path)
 		else:
-			self.gcode_reply.append('!! No filament loaded !!')
+			self.gcode.respond_info('!! No filament loaded !!')
 	#	Ok button in DWC webif
 	def cmd_M292(self, params):
 		self.popup = None
