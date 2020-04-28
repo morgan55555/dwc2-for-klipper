@@ -1117,19 +1117,6 @@ class web_dwc2:
 
 		self.file_infos['running_file'] = self.rr_fileinfo('knackwurst').result()
 		return self.cmd_M24(params)
-	#	run dwc macro
-	def _run_macro(self, path):
-		if os.path.exists(path):
-
-			with open( path ) as f:
-				lines = f.readlines()
-
-			for line in [x.strip() for x in lines]:
-				self.gcode_queue.append(line)
-			
-			return True
-		else:
-			return False
 	#	rrf run macro
 	def cmd_M98(self, params):
 
@@ -1144,7 +1131,12 @@ class web_dwc2:
 				return 0
 		else:
 			#	now we know its a macro from dwc
-			self._run_macro(path)
+			with open( path ) as f:
+				lines = f.readlines()
+
+			for line in [x.strip() for x in lines]:
+				self.gcode_queue.append(line)
+
 			return 0
 	#	rrf M106 translation to klipper scale
 	def cmd_M106(self, params):
@@ -1190,6 +1182,20 @@ class web_dwc2:
 			self.gcode.cmd_SET_GCODE_OFFSET(params)
 			self.gcode_reply.append('Z adjusted by %0.2f' % mm_step)
 			return 0
+	#	run script
+	def _run_macro(self, path):
+		if os.path.exists(path):
+			try:
+				with open( path ) as f:
+					lines = f.readlines()
+
+				for line in [x.strip() for x in lines]:
+					self.gcode.run_script_from_command(line)
+			except Exception:
+				return False
+			else:
+				return True
+		return False
 	#	load filament
 	def cmd_M701(self, params):
 		filament = self.gcode.get_str('S', params, None)
