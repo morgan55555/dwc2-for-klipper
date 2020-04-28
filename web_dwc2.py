@@ -96,6 +96,10 @@ class web_dwc2:
 				self.extruders.append(app)
 		self.kinematics = self.toolhead.get_kinematics()
 		self.filament = ''
+		current = self.sdpath + '/filaments/current'
+		if os.path.exists( current ):
+			with open( current ) as f:
+				self.filament = f.readline()
 
 		# 	print data for tracking layers during print
 		self.print_data = {}			#	printdata/layertimes etc
@@ -1188,8 +1192,11 @@ class web_dwc2:
 		filament = splitted[1][1:] if len(splitted) >= 2 else None
 		if filament:
 			path = self.sdpath + '/filaments/' + filament + '/load.g'
+			current = self.sdpath + '/filaments/current'
 			if self._run_macro(path):
 				self.filament = filament
+				with open( current, 'w' ) as f:
+					f.write(self.filament)
 			else:
 				self.gcode_reply.append('!! Invalid filament !!')
 		elif self.filament:
@@ -1200,8 +1207,14 @@ class web_dwc2:
 	def cmd_M702(self, params):
 		if self.filament:
 			path = self.sdpath + '/filaments/' + self.filament + '/unload.g'
+			current = self.sdpath + '/filaments/current'
 			self._run_macro(path)
 			self.filament = None
+			try:
+				os.remove(current)
+			except OSError as e:
+				if e.errno != errno.ENOENT:
+					raise
 		else:
 			self.gcode_reply.append('!! No filament loaded !!')
 	#	load filament settings
