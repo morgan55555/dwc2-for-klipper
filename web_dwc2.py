@@ -519,7 +519,7 @@ class web_dwc2:
 
 		#	allow - set heater, cancelprint, set bed, ,pause, resume, set fan, set speedfactor, set extrusion multipler, babystep, ok in popup
 		midprint_allow = [ 'DUMP_TMC', 'G10', 'GET_POSITION', 'HELP', 'M0', 'M140', 'M24', 'M25', 'M104', 'M106', 'M107', 'M112', 'M114', 'M115', 'M140', 'M204', 'M220', 'M221', 'M290', 'M292', 'QUERY_FILAMENT_SENSOR', 'SET_TMC_CURRENT', 'SET_PIN',
-				'SET_PRESSURE_ADVANCE', 'SET_VELOCITY_LIMIT', 'T', 'SET_GCODE_OFFSET', 'M701', 'M702', 'M703' ]
+				'SET_PRESSURE_ADVANCE', 'SET_VELOCITY_LIMIT', 'T', 'SET_GCODE_OFFSET' ]
 
 		#	Handle emergencys - just do it now
 		for code in gcodes:
@@ -1198,7 +1198,8 @@ class web_dwc2:
 		return False
 	#	load filament
 	def cmd_M701(self, params):
-		filament = self.gcode.get_str('S', params, None)
+		splitted = params['#original'].split(' ')
+		filament = splitted[1][1:] if len(splitted) >= 2 else None
 		if filament:
 			path = self.sdpath + '/filaments/' + filament + '/load.g'
 			current = self.sdpath + '/filaments/current'
