@@ -1097,7 +1097,7 @@ class web_dwc2:
 		#	file dwc1 - 'zzz/simplify3D41.gcode'
 		#	file dwc2 - '/gcodes/zzz/simplify3D41.gcode'
 
-		file = '/'.join(params['#original'].split(' ')[1:])
+		file = '/'.join(params['#original'].split(' ', 1)[1:])
 		if '/gcodes/' not in file:	#	DWC 1 work arround
 			fullpath = self.sdpath + '/gcodes/' + params['#original'].split()[1]
 		else:
